@@ -253,8 +253,3 @@ class Transform:
         self.logger.info(f"{verify_nulls.collect()[0]} after update null values")
 
         return self.dataFrame
-
-
-
-
-
