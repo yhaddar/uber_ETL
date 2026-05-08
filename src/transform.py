@@ -123,6 +123,21 @@ class Transform:
         self.logger.info(f"{count_of_empty_booking_value_after_cleaning} row have null value in Booking Value before cleaning")
         self.logger.info("terminate updating book value row")
 
+    def update_ride_distance(self):
+        self.logger.info("updating Ride Distance row...")
+        count_of_empty_ride_distance_before_cleaning = self.dataFrame.filter(col("Ride Distance").isNull()).count()
+
+        self.dataFrame = self.dataFrame.withColumn(
+            "Ride Distance",
+            when(col("Ride Distance").isNull(), 0)
+            .otherwise(col("Ride Distance"))
+        )
+        count_of_empty_ride_distance_after_cleaning = self.dataFrame.filter(col("Ride Distance").isNull()).count()
+
+        self.logger.info(f"{count_of_empty_ride_distance_before_cleaning} row have null value in Ride Distance before cleaning")
+        self.logger.info(f"{count_of_empty_ride_distance_after_cleaning} row have null value in Ride Distance before cleaning")
+        self.logger.info("terminate updating book value row")
+
     def update_driver_rating(self):
         self.logger.info("updating Driver Ratings row...")
         count_of_empty_driver_rating_before_cleaning = self.dataFrame.filter(col("Driver Ratings").isNull()).count()
@@ -224,6 +239,8 @@ class Transform:
             sum(when(col(c).isNull(), 1).otherwise(0)).alias(c)
             for c in self.dataFrame.columns
         ])
+
+        print(verify_nulls.show())
 
         self.logger.info(f"{self.dataFrame.count()} after remove duplicates data")
         self.logger.info(f"{verify_nulls.collect()[0]} after update null values")
