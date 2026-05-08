@@ -1,7 +1,7 @@
 from pyspark.sql.functions import col, when
 from src.logs import Logs
 
-# Driver Cancellation Reason, Incomplete Rides Reason, Booking Value, Ride Distance, Driver Ratings, Customer Rating, Payment Method
+# Booking Value, Ride Distance, Driver Ratings, Customer Rating, Payment Method
 
 class Transform:
     def __init__(self, data_frame, spark_session):
@@ -96,4 +96,18 @@ class Transform:
         self.logger.info(f"{count_of_empty_null_value_before_cleaning} row have null value in Driver Cancellation Reason before cleaning")
         self.logger.info(f"{count_of_empty_null_value_after_cleaning} row have null value in Driver Cancellation Reason have updated to other")
         self.logger.info("terminate updating Driver Cancellation Reason row")
+
+    def update_incomplete_rides_reason(self):
+        self.logger.info("updating Incomplete Rides Reason row...")
+        count_of_empty_cancelled_rides_by_customer_before_cleaning = self.dataFrame.filter(col("Incomplete Rides Reason").isNull()).count()
+        self.dataFrame = self.dataFrame.withColumn(
+            "Incomplete Rides Reason",
+            when(col("Incomplete Rides Reason").isNull(), "unknown")
+            .otherwise(col("Incomplete Rides Reason"))
+        )
+        count_of_empty_cancelled_rides_by_customer_after_cleaning = self.dataFrame.filter(col("Incomplete Rides Reason").isNull()).count()
+
+        self.logger.info(f"{count_of_empty_cancelled_rides_by_customer_before_cleaning} row have null in Incomplete Rides Reason before cleaning")
+        self.logger.info(f"{count_of_empty_cancelled_rides_by_customer_after_cleaning} row have null in Incomplete Rides Reason after cleaning")
+        self.logger.info("terminate updating Incomplete Rides Reason row")
 
