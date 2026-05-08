@@ -51,3 +51,17 @@ class Transform:
         self.logger.info(f"{count_of_empty_null_value_before_cleaning} row have null value in Reason for cancelling by Customer before cleaning")
         self.logger.info(f"{count_of_empty_null_value_after_cleaning} row have null value in Reason for cancelling by Customer have updated to other")
         self.logger.info("terminate updating Reason for cancelling by Customer row")
+
+    def update_canceled_by_driver(self):
+        self.logger.info("updating Cancelled Rides by Driver row...")
+        count_of_empty_cancelled_rides_by_customer_before_cleaning = self.dataFrame.filter(col("Cancelled Rides by Driver").isNull()).count()
+        self.dataFrame = self.dataFrame.withColumn(
+            "Cancelled Rides by Driver",
+            when(col("Cancelled Rides by Driver").isNull(), 0)
+            .otherwise(col("Cancelled Rides by Driver"))
+        )
+        count_of_empty_cancelled_rides_by_customer_after_cleaning = self.dataFrame.filter(col("Cancelled Rides by Driver").isNull()).count()
+
+        self.logger.info(f"{count_of_empty_cancelled_rides_by_customer_before_cleaning} row have null in Cancelled Rides by Driver before cleaning")
+        self.logger.info(f"{count_of_empty_cancelled_rides_by_customer_after_cleaning} row have null in Cancelled Rides by Driver after cleaning")
+        self.logger.info("terminate updating Cancelled Rides by Driver row")
