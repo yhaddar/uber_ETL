@@ -1,7 +1,8 @@
-from pyspark.sql.functions import col, when
+from pyspark.sql.connect.logging import logger
+from pyspark.sql.functions import col, when, avg, round
 from src.logs import Logs
 
-# Booking Value, Ride Distance, Driver Ratings, Customer Rating, Payment Method
+# Booking Value, Ride Distance, , Customer Rating, Payment Method
 
 class Transform:
     def __init__(self, data_frame, spark_session):
@@ -106,8 +107,42 @@ class Transform:
             .otherwise(col("Incomplete Rides Reason"))
         )
         count_of_empty_cancelled_rides_by_customer_after_cleaning = self.dataFrame.filter(col("Incomplete Rides Reason").isNull()).count()
-
         self.logger.info(f"{count_of_empty_cancelled_rides_by_customer_before_cleaning} row have null in Incomplete Rides Reason before cleaning")
         self.logger.info(f"{count_of_empty_cancelled_rides_by_customer_after_cleaning} row have null in Incomplete Rides Reason after cleaning")
         self.logger.info("terminate updating Incomplete Rides Reason row")
+
+    def update_book_value(self):
+        # self.logger.info("updating Book value row...")
+        # count_of_empty_booking_value_before_clearning = self.dataFrame.filter(col("Booking Value").isNull()).count()
+        # print(self.dataFrame.select("Driver Ratings").distinct().show(150000))
+        pass
+        # logger.info(f"{count_of_empty_booking_value_before_clearning} row have null value in Booking Value before cleaning")
+
+    def update_driver_rating(self):
+        self.logger.info("updating Driver Ratings row...")
+        count_of_empty_booking_value_before_cleaning = self.dataFrame.filter(col("Driver Ratings").isNull()).count()
+
+        avg_rating = self.dataFrame.filter("`Driver Ratings` IS NOT NULL").distinct().select(avg("Driver Ratings"))
+        avg_rating_collected = avg_rating.collect()[0][0]
+
+        self.dataFrame = self.dataFrame.withColumn(
+            "Driver Ratings",
+            when(col("Driver Ratings").isNull(), avg_rating_collected)
+            .otherwise(col("Driver Ratings"))
+        )
+
+        self.logger.info("round the Driver Ratings value to 2 number after the comma...")
+
+        self.dataFrame = self.dataFrame.withColumn(
+            "Driver Ratings",
+            round(col("Driver Ratings"), 1)
+        )
+
+        count_of_empty_booking_value_after_cleaning = self.dataFrame.filter(col("Driver Ratings").isNull()).count()
+
+        self.logger.info(f"{count_of_empty_booking_value_before_cleaning} row have null value in Driver Ratings before cleaning")
+        self.logger.info(f"{count_of_empty_booking_value_after_cleaning} row have null value in Driver Ratings after cleaning")
+        self.logger.info("terminate updating Driver Ratings row")
+
+
 
