@@ -1,7 +1,5 @@
-from pyspark.sql.functions import col, when, avg, round, try_to_date, to_timestamp
+from pyspark.sql.functions import col, when, avg, round, try_to_date, to_timestamp, sum
 from src.logs import Logs
-
-# Booking Value, Ride Distance
 
 class Transform:
     def __init__(self, data_frame, spark_session):
@@ -111,11 +109,19 @@ class Transform:
         self.logger.info("terminate updating Incomplete Rides Reason row")
 
     def update_book_value(self):
-        # self.logger.info("updating Book value row...")
-        # count_of_empty_booking_value_before_clearning = self.dataFrame.filter(col("Booking Value").isNull()).count()
-        # print(self.dataFrame.select("Driver Ratings").distinct().show(150000))
-        pass
-        # logger.info(f"{count_of_empty_booking_value_before_clearning} row have null value in Booking Value before cleaning")
+        self.logger.info("updating Book value row...")
+        count_of_empty_booking_value_before_cleaning = self.dataFrame.filter(col("Booking Value").isNull()).count()
+
+        self.dataFrame = self.dataFrame.withColumn(
+            "Booking Value",
+            when(col("Booking Value").isNull(), 0)
+            .otherwise(col("Booking Value"))
+        )
+        count_of_empty_booking_value_after_cleaning = self.dataFrame.filter(col("Booking Value").isNull()).count()
+
+        self.logger.info(f"{count_of_empty_booking_value_before_cleaning} row have null value in Booking Value before cleaning")
+        self.logger.info(f"{count_of_empty_booking_value_after_cleaning} row have null value in Booking Value before cleaning")
+        self.logger.info("terminate updating book value row")
 
     def update_driver_rating(self):
         self.logger.info("updating Driver Ratings row...")
@@ -204,6 +210,24 @@ class Transform:
         )
 
         self.logger.info("Time was updated")
+
+    def remove_empty_date(self):
+        self.logger.info("removing empty date row...")
+        self.logger.info(f"{self.dataFrame.count()} rows have null value in Date before cleaning")
+        self.dataFrame = self.dataFrame.dropna(subset=["Date"])
+        self.logger.info(f"{self.dataFrame.count()} rows have null value in Date after cleaning")
+
+    def verification(self):
+        self.logger.info("verifying data...")
+
+        verify_nulls = self.dataFrame.select([
+            sum(when(col(c).isNull(), 1).otherwise(0)).alias(c)
+            for c in self.dataFrame.columns
+        ])
+
+        self.logger.info(f"{self.dataFrame.count()} after remove duplicates data")
+        self.logger.info(f"{verify_nulls.collect()[0]} after update null values")
+
 
 
 
