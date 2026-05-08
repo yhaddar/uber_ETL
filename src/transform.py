@@ -120,7 +120,7 @@ class Transform:
 
     def update_driver_rating(self):
         self.logger.info("updating Driver Ratings row...")
-        count_of_empty_booking_value_before_cleaning = self.dataFrame.filter(col("Driver Ratings").isNull()).count()
+        count_of_empty_driver_rating_before_cleaning = self.dataFrame.filter(col("Driver Ratings").isNull()).count()
 
         avg_rating = self.dataFrame.filter("`Driver Ratings` IS NOT NULL").distinct().select(avg("Driver Ratings"))
         avg_rating_collected = avg_rating.collect()[0][0]
@@ -138,11 +138,37 @@ class Transform:
             round(col("Driver Ratings"), 1)
         )
 
-        count_of_empty_booking_value_after_cleaning = self.dataFrame.filter(col("Driver Ratings").isNull()).count()
+        count_of_empty_driver_rating_after_cleaning = self.dataFrame.filter(col("Driver Ratings").isNull()).count()
 
-        self.logger.info(f"{count_of_empty_booking_value_before_cleaning} row have null value in Driver Ratings before cleaning")
-        self.logger.info(f"{count_of_empty_booking_value_after_cleaning} row have null value in Driver Ratings after cleaning")
+        self.logger.info(f"{count_of_empty_driver_rating_before_cleaning} row have null value in Driver Ratings before cleaning")
+        self.logger.info(f"{count_of_empty_driver_rating_after_cleaning} row have null value in Driver Ratings after cleaning")
         self.logger.info("terminate updating Driver Ratings row")
+
+    def update_customer_rating(self):
+        self.logger.info("updating Customer Rating row...")
+        count_of_empty_customer_rating_before_cleaning = self.dataFrame.filter(col("Customer Rating").isNull()).count()
+
+        avg_rating = self.dataFrame.filter("`Customer Rating` IS NOT NULL").distinct().select(avg("Customer Rating"))
+        avg_rating_collected = avg_rating.collect()[0][0]
+
+        self.dataFrame = self.dataFrame.withColumn(
+            "Customer Rating",
+            when(col("Customer Rating").isNull(), avg_rating_collected)
+            .otherwise(col("Customer Rating"))
+        )
+
+        self.logger.info("round the Customer Rating value to 2 number after the comma...")
+
+        self.dataFrame = self.dataFrame.withColumn(
+            "Customer Rating",
+            round(col("Customer Rating"), 1)
+        )
+
+        count_of_empty_customer_rating_after_cleaning = self.dataFrame.filter(col("Customer Rating").isNull()).count()
+
+        self.logger.info(f"{count_of_empty_customer_rating_before_cleaning} row have null value in Customer Rating before cleaning")
+        self.logger.info(f"{count_of_empty_customer_rating_after_cleaning} row have null value in Customer Rating after cleaning")
+        self.logger.info("terminate updating Customer Rating row")
 
 
 
