@@ -1,4 +1,4 @@
-from pyspark.sql.functions import col, when, avg, round, to_date, try_to_date
+from pyspark.sql.functions import col, when, avg, round, try_to_date, to_timestamp
 from src.logs import Logs
 
 # Booking Value, Ride Distance
@@ -194,6 +194,17 @@ class Transform:
         )
 
         self.logger.info("date was updated")
+
+    def update_type_of_time(self):
+        self.logger.info("updating Type of Time row...")
+
+        self.dataFrame = self.dataFrame.withColumn(
+            "Time",
+            to_timestamp(col("Time"), "H:mm:ss")
+        )
+
+        self.logger.info("Time was updated")
+
 
 
 
