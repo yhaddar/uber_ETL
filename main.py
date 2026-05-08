@@ -1,6 +1,9 @@
 from src.spark_session import Spark_Session
+from src.transform import Transform
 
 sparkSession = Spark_Session()
 df = sparkSession.connect_in_spark()
 
-print(df)
+transform_data = Transform(df)
+transform_data.info()
+transform_data.remove_duplicates()

@@ -1,15 +1,7 @@
 from pyspark.sql import SparkSession
 from src.logs import Logs
 
-# spark = SparkSession.builder.appName("").getOrCreate()
-#
-# df.createOrReplaceTempView("uber")
-# df.printSchema()
-# df.show(5)
-# print(f'total of rows : {df.count()}') # 150000
-# print(df.groupby('Booking ID').count().filter("COUNT > 1").show(150000))
-# df = df.dropDuplicates(['Booking ID'])
-# print(f'total of rows after remove duplicates : {df.count()}') # 150000
+
 
 
 class Spark_Session:
