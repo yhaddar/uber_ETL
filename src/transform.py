@@ -1,4 +1,4 @@
-from pyspark.sql.functions import col, when, avg, round, to_date
+from pyspark.sql.functions import col, when, avg, round, to_date, try_to_date
 from src.logs import Logs
 
 # Booking Value, Ride Distance
@@ -184,6 +184,16 @@ class Transform:
         self.logger.info(f"{count_of_empty_payment_method_before_cleaning} row have null value in Payment Method before cleaning")
         self.logger.info(f"{count_of_empty_payment_method_after_cleaning} row have null value in Payment Method after cleaning")
         self.logger.info("terminate updating Payment Method row")
+
+    def update_type_of_date(self):
+        self.logger.info("updating Type of Date row...")
+
+        self.dataFrame = self.dataFrame.withColumn(
+            "Date",
+            try_to_date(col("Date"), "dd-MMM-yy")
+        )
+
+        self.logger.info("date was updated")
 
 
 
