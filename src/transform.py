@@ -1,8 +1,7 @@
-from pyspark.sql.connect.logging import logger
-from pyspark.sql.functions import col, when, avg, round
+from pyspark.sql.functions import col, when, avg, round, to_date
 from src.logs import Logs
 
-# Booking Value, Ride Distance, , Customer Rating, Payment Method
+# Booking Value, Ride Distance
 
 class Transform:
     def __init__(self, data_frame, spark_session):
@@ -169,6 +168,22 @@ class Transform:
         self.logger.info(f"{count_of_empty_customer_rating_before_cleaning} row have null value in Customer Rating before cleaning")
         self.logger.info(f"{count_of_empty_customer_rating_after_cleaning} row have null value in Customer Rating after cleaning")
         self.logger.info("terminate updating Customer Rating row")
+
+    def update_payment_method(self):
+        self.logger.info("updating Payment Method row...")
+        count_of_empty_payment_method_before_cleaning = self.dataFrame.filter(col("Payment Method").isNull()).count()
+
+        self.dataFrame = self.dataFrame.withColumn(
+            "Payment Method",
+            when(col("Payment Method").isNull(), "unknown")
+            .otherwise(col("Payment Method"))
+        )
+
+        count_of_empty_payment_method_after_cleaning = self.dataFrame.filter(col("Payment Method").isNull()).count()
+
+        self.logger.info(f"{count_of_empty_payment_method_before_cleaning} row have null value in Payment Method before cleaning")
+        self.logger.info(f"{count_of_empty_payment_method_after_cleaning} row have null value in Payment Method after cleaning")
+        self.logger.info("terminate updating Payment Method row")
 
 
 
