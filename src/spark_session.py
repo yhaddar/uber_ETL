@@ -11,11 +11,12 @@ class Spark_Session:
         self.inferSchema = True
         self.appName = "uber_transform"
         self.logger = Logs.get_logger("spark session")
+        self.spark = None
 
     def connect_in_spark(self):
         self.logger.info("Start to connecting to Spark...")
-        spark = SparkSession.builder.appName(self.appName).getOrCreate()
-        df = spark.read.csv(
+        self.spark = SparkSession.builder.appName(self.appName).getOrCreate()
+        df = self.spark.read.csv(
             self.csv_path,
             header=self.header,
             inferSchema=self.inferSchema

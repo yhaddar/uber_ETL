@@ -4,6 +4,7 @@ from src.transform import Transform
 sparkSession = Spark_Session()
 df = sparkSession.connect_in_spark()
 
-transform_data = Transform(df)
+transform_data = Transform(df, sparkSession)
 transform_data.info()
 transform_data.remove_duplicates()
+transform_data.update_null()
