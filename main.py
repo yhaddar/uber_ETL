@@ -1,5 +1,6 @@
 from src.spark_session import Spark_Session
 from src.transform import Transform
+from src.load import Load
 
 sparkSession = Spark_Session()
 df = sparkSession.connect_in_spark()
@@ -21,4 +22,7 @@ transform_data.update_payment_method()
 transform_data.update_type_of_date()
 transform_data.update_type_of_time()
 transform_data.remove_empty_date()
-transform_data.verification()
+final_data_frame = transform_data.verification()
+
+load_data = Load(final_data_frame)
+load_data.save_as_csv()
