@@ -23,7 +23,7 @@ class Transform:
         self.logger.info(f"{count_duplicated} row was removed because is duplicated")
         self.logger.info(f"{self.dataFrame.count()} unique rows")
 
-    def update_null(self):
+    def update_canceled_by_customer(self):
         self.logger.info("update null values...")
         self.logger.info("updating Cancelled Rides by Customer row...")
         count_of_empty_cancelled_rides_by_customer_before_cleaning = self.dataFrame.filter(col("Cancelled Rides by Customer").isNull()).count()
