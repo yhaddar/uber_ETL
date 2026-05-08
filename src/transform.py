@@ -235,12 +235,19 @@ class Transform:
     def verification(self):
         self.logger.info("verifying data...")
 
+        self.logger.info("change the attribute name with add _ and lowercase in every name")
+        self.dataFrame = self.dataFrame.toDF(*[
+            c.strip().replace(" ", "_").lower()
+            for c in self.dataFrame.columns
+        ])
+
         verify_nulls = self.dataFrame.select([
             sum(when(col(c).isNull(), 1).otherwise(0)).alias(c)
             for c in self.dataFrame.columns
         ])
 
         print(verify_nulls.show())
+        print(self.dataFrame.dtypes)
 
         self.logger.info(f"{self.dataFrame.count()} after remove duplicates data")
         self.logger.info(f"{verify_nulls.collect()[0]} after update null values")

@@ -15,7 +15,7 @@ class Spark_Session:
 
     def connect_in_spark(self):
         self.logger.info("Start to connecting to Spark...")
-        self.spark = SparkSession.builder.appName(self.appName).getOrCreate()
+        self.spark = SparkSession.builder.appName(self.appName).config("spark.jars.packages", "net.snowflake:spark-snowflake_2.13:2.12.0-spark_3.4").getOrCreate()
         df = self.spark.read.csv(
             self.csv_path,
             header=self.header,
@@ -23,3 +23,5 @@ class Spark_Session:
         )
         self.logger.info("Connected To Spark")
         return df
+    def return_spark(self):
+        return self.spark
