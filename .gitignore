@@ -1,3 +1,4 @@
-.gitignore
 src/config.py
 derby.log
+
+.gitignore
