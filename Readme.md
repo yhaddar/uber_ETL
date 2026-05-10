@@ -160,11 +160,7 @@ The final step was creating an interactive dashboard in Power BI.
 
 # 🖼️ Dashboard Preview
 
-> Add your dashboard screenshot here
-
-```md
-![Dashboard](./images/dashboard.png)
-```
+![Dashboard](https://raw.githubusercontent.com/yhaddar/uber_ETL/refs/heads/main/images/dashboard.png)
 
 ---
 
